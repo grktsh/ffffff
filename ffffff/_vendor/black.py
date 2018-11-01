@@ -48,7 +48,7 @@ from ffffff._vendor.blib2to3.pgen2.parse import ParseError
 
 
 __version__ = "18.9b0"
-DEFAULT_LINE_LENGTH = 88
+DEFAULT_LINE_LENGTH = 79
 DEFAULT_EXCLUDES = (
     r"/(\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|_build|buck-out|build|dist)/"
 )
@@ -2561,7 +2561,7 @@ def normalize_string_quotes(leaf: Leaf) -> None:
     if new_escape_count > orig_escape_count:
         return  # Do not introduce more escaping
 
-    if new_escape_count == orig_escape_count and orig_quote == '"':
+    if new_escape_count == orig_escape_count and orig_quote == "'":
         return  # Prefer double quotes
 
     leaf.value = f"{prefix}{new_quote}{new_body}{new_quote}"
