@@ -20,6 +20,11 @@ FILE_WHITE_LIST = (
     'README.rst',
 )
 
+# libraries that have directories with different names
+LIBRARY_DIRNAMES = {
+    'attrs': 'attr',
+}
+
 
 def drop_dir(path, **kwargs):
     shutil.rmtree(str(path), **kwargs)
@@ -112,6 +117,8 @@ def vendor(ctx, vendor_dir):
     remove_all(vendor_dir.glob('*.dist-info'))
     remove_all(vendor_dir.glob('*.egg-info'))
 
+    (vendor_dir / 'toml.py').unlink()
+
     # Drop the bin directory (contains easy_install, distro, chardetect etc.)
     # Might not appear on all OSes, so ignoring errors
     drop_dir(vendor_dir / 'bin', ignore_errors=True)
@@ -200,14 +207,15 @@ def license_destination(vendor_dir, libname, filename):
     lowercase = vendor_dir / libname.lower()
     if lowercase.is_dir():
         return lowercase / filename
+    if libname in LIBRARY_DIRNAMES:
+        return vendor_dir / LIBRARY_DIRNAMES[libname] / filename
     # fallback to libname.LICENSE (used for nondirs)
     return vendor_dir / '{}.{}'.format(libname, filename)
 
 
 def extract_license_member(vendor_dir, tar, member, name):
     mpath = Path(name)  # relative path inside the sdist
-    dirname = list(mpath.parents)[-2].name  # -1 is .
-    libname = libname_from_dir(dirname)
+    libname = libname_from_dir(mpath.parent.name)
     dest = license_destination(vendor_dir, libname, mpath.name)
     dest_relative = dest.relative_to(Path.cwd())
     log('Extracting {} into {}'.format(name, dest_relative))
