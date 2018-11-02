@@ -1,6 +1,5 @@
 *.egg-info/
 
-/.eggs/
 /build/
 /dist/
 /ffffff/__init__.py
