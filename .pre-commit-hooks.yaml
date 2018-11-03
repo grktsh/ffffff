@@ -1,0 +1,6 @@
+- id: ffffff
+  name: FFFFFF
+  entry: ffffff
+  language: python
+  language_version: python3
+  types: [python]
