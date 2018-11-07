@@ -35,6 +35,8 @@ from typing import (
     cast,
 )
 
+import ffffff
+
 from ffffff._vendor.appdirs import user_cache_dir
 from ffffff._vendor.attr import dataclass, Factory
 from ffffff._vendor import click
@@ -272,7 +274,7 @@ def read_pyproject_toml(
         "ignored due to --exclude=."
     ),
 )
-@click.version_option(version=__version__)
+@click.version_option(version=__version__ + '+' + ffffff.__version__)
 @click.argument(
     "src",
     nargs=-1,

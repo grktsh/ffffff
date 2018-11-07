@@ -1,8 +1,17 @@
 diff --git a/ffffff/_vendor/black.py b/ffffff/_vendor/black.py
-index 0b03130..4fb5801 100644
+index 0b03130..1e841ca 100644
 --- a/ffffff/_vendor/black.py
 +++ b/ffffff/_vendor/black.py
-@@ -48,7 +48,7 @@ from ffffff._vendor.blib2to3.pgen2.parse import ParseError
+@@ -35,6 +35,8 @@ from typing import (
+     cast,
+ )
+ 
++import ffffff
++
+ from ffffff._vendor.appdirs import user_cache_dir
+ from ffffff._vendor.attr import dataclass, Factory
+ from ffffff._vendor import click
+@@ -48,7 +50,7 @@ from ffffff._vendor.blib2to3.pgen2.parse import ParseError
  
  
  __version__ = "18.9b0"
@@ -11,7 +20,16 @@ index 0b03130..4fb5801 100644
  DEFAULT_EXCLUDES = (
      r"/(\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|_build|buck-out|build|dist)/"
  )
-@@ -2561,7 +2561,7 @@ def normalize_string_quotes(leaf: Leaf) -> None:
+@@ -272,7 +274,7 @@ def read_pyproject_toml(
+         "ignored due to --exclude=."
+     ),
+ )
+-@click.version_option(version=__version__)
++@click.version_option(version=__version__ + '+' + ffffff.__version__)
+ @click.argument(
+     "src",
+     nargs=-1,
+@@ -2561,7 +2563,7 @@ def normalize_string_quotes(leaf: Leaf) -> None:
      if new_escape_count > orig_escape_count:
          return  # Do not introduce more escaping
  
