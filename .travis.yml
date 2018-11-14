@@ -6,6 +6,7 @@ python:
   - '3.7'
 install:
   - pip install pipenv
+  - pipenv install --dev
 script:
   - pipenv run python setup.py sdist bdist_wheel
 deploy:
