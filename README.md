@@ -1,5 +1,7 @@
 # ffffff
 
+[![PyPI](https://img.shields.io/pypi/v/ffffff.svg)](https://pypi.org/project/ffffff)
+
 > Black but single quotes
 
 ## Prerequisites
