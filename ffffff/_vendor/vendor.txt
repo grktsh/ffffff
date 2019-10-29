@@ -1,5 +1,6 @@
 appdirs==1.4.3
-attrs==19.1.0
-black==19.3b0
-click==7.0
+attrs==19.3.0
+black==19.10b0
+Click==7.0
+pathspec==0.6.0
 toml==0.10.0

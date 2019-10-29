@@ -85,10 +85,14 @@ class Grammar(object):
         self.tokens = {}
         self.symbol2label = {}
         self.start = 256
+        # Python 3.7+ parses async as a keyword, not an identifier
+        self.async_keywords = False
 
     def dump(self, filename):
         """Dump the grammar tables to a pickle file."""
-        with tempfile.NamedTemporaryFile(dir=os.path.dirname(filename), delete=False) as f:
+        with tempfile.NamedTemporaryFile(
+            dir=os.path.dirname(filename), delete=False
+        ) as f:
             pickle.dump(self.__dict__, f, pickle.HIGHEST_PROTOCOL)
         os.replace(f.name, filename)
 
@@ -107,17 +111,25 @@ class Grammar(object):
         Copy the grammar.
         """
         new = self.__class__()
-        for dict_attr in ("symbol2number", "number2symbol", "dfas", "keywords",
-                          "tokens", "symbol2label"):
+        for dict_attr in (
+            "symbol2number",
+            "number2symbol",
+            "dfas",
+            "keywords",
+            "tokens",
+            "symbol2label",
+        ):
             setattr(new, dict_attr, getattr(self, dict_attr).copy())
         new.labels = self.labels[:]
         new.states = self.states[:]
         new.start = self.start
+        new.async_keywords = self.async_keywords
         return new
 
     def report(self):
         """Dump the grammar tables to standard output, for debugging."""
         from pprint import pprint
+
         print("s2n")
         pprint(self.symbol2number)
         print("n2s")
@@ -181,6 +193,7 @@ opmap_raw = """
 // DOUBLESLASH
 //= DOUBLESLASHEQUAL
 -> RARROW
+:= COLONEQUAL
 """
 
 opmap = {}

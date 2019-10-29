@@ -1,5 +1,6 @@
 import asyncio
 from concurrent.futures import Executor, ProcessPoolExecutor
+from datetime import datetime
 from functools import partial
 import logging
 from multiprocessing import freeze_support
@@ -10,22 +11,30 @@ import aiohttp_cors
 from ffffff._vendor import black
 from ffffff._vendor import click
 
+from ffffff._vendor._black_version import version as __version__
+
 # This is used internally by tests to shut down the server prematurely
 _stop_signal = asyncio.Event()
 
-VERSION_HEADER = "X-Protocol-Version"
+# Request headers
+PROTOCOL_VERSION_HEADER = "X-Protocol-Version"
 LINE_LENGTH_HEADER = "X-Line-Length"
 PYTHON_VARIANT_HEADER = "X-Python-Variant"
 SKIP_STRING_NORMALIZATION_HEADER = "X-Skip-String-Normalization"
 FAST_OR_SAFE_HEADER = "X-Fast-Or-Safe"
+DIFF_HEADER = "X-Diff"
 
 BLACK_HEADERS = [
-    VERSION_HEADER,
+    PROTOCOL_VERSION_HEADER,
     LINE_LENGTH_HEADER,
     PYTHON_VARIANT_HEADER,
     SKIP_STRING_NORMALIZATION_HEADER,
     FAST_OR_SAFE_HEADER,
+    DIFF_HEADER,
 ]
+
+# Response headers
+BLACK_VERSION_HEADER = "X-Black-Version"
 
 
 class InvalidVariantHeader(Exception):
@@ -65,8 +74,9 @@ def make_app() -> web.Application:
 
 
 async def handle(request: web.Request, executor: Executor) -> web.Response:
+    headers = {BLACK_VERSION_HEADER: __version__}
     try:
-        if request.headers.get(VERSION_HEADER, "1") != "1":
+        if request.headers.get(PROTOCOL_VERSION_HEADER, "1") != "1":
             return web.Response(
                 status=501, text="This server only supports protocol version 1"
             )
@@ -105,20 +115,38 @@ async def handle(request: web.Request, executor: Executor) -> web.Response:
         req_bytes = await request.content.read()
         charset = request.charset if request.charset is not None else "utf8"
         req_str = req_bytes.decode(charset)
+        then = datetime.utcnow()
+
         loop = asyncio.get_event_loop()
         formatted_str = await loop.run_in_executor(
             executor, partial(black.format_file_contents, req_str, fast=fast, mode=mode)
         )
+
+        # Only output the diff in the HTTP response
+        only_diff = bool(request.headers.get(DIFF_HEADER, False))
+        if only_diff:
+            now = datetime.utcnow()
+            src_name = f"In\t{then} +0000"
+            dst_name = f"Out\t{now} +0000"
+            loop = asyncio.get_event_loop()
+            formatted_str = await loop.run_in_executor(
+                executor,
+                partial(black.diff, req_str, formatted_str, src_name, dst_name),
+            )
+
         return web.Response(
-            content_type=request.content_type, charset=charset, text=formatted_str
+            content_type=request.content_type,
+            charset=charset,
+            headers=headers,
+            text=formatted_str,
         )
     except black.NothingChanged:
-        return web.Response(status=204)
+        return web.Response(status=204, headers=headers)
     except black.InvalidInput as e:
-        return web.Response(status=400, text=str(e))
+        return web.Response(status=400, headers=headers, text=str(e))
     except Exception as e:
         logging.exception("Exception during handling a request")
-        return web.Response(status=500, text=str(e))
+        return web.Response(status=500, headers=headers, text=str(e))
 
 
 def parse_python_variant_header(value: str) -> Tuple[bool, Set[black.TargetVersion]]:
@@ -129,7 +157,11 @@ def parse_python_variant_header(value: str) -> Tuple[bool, Set[black.TargetVersi
         for version in value.split(","):
             if version.startswith("py"):
                 version = version[len("py") :]
-            major_str, *rest = version.split(".")
+            if "." in version:
+                major_str, *rest = version.split(".")
+            else:
+                major_str = version[0]
+                rest = [version[1:]] if len(version) > 1 else []
             try:
                 major = int(major_str)
                 if major not in (2, 3):
