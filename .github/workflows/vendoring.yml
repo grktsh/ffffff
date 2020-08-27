@@ -1,0 +1,41 @@
+name: Vendoring
+
+on:
+  pull_request:
+  push:
+    branches:
+
+jobs:
+  vendoring:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          # Make setuptools_scm able to guess the version.
+          # actions/checkout#249
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
+      - name: Ensure pip is up to date
+        run: |
+          python -m pip install --upgrade pip
+
+      - name: Vendor
+        run: |
+          python -m pip install invoke
+          invoke vendoring.update
+
+      - name: Build
+        run: |
+          python -m pip install pep517
+          python -m pep517.build .
+
+      - name: Upload
+        uses: actions/upload-artifact@v2
+        with:
+          path: dist
