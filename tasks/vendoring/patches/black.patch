@@ -1,7 +1,7 @@
-diff --git a/ffffff/_vendor/black.py b/ffffff/_vendor/black.py
+diff --git a/src/ffffff/_vendor/black.py b/src/ffffff/_vendor/black.py
 index 651e600..0bead1c 100644
---- a/ffffff/_vendor/black.py
-+++ b/ffffff/_vendor/black.py
+--- a/src/ffffff/_vendor/black.py
++++ b/src/ffffff/_vendor/black.py
 @@ -38,6 +38,8 @@ from typing import (
      cast,
  )

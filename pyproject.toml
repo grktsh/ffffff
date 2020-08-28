@@ -3,5 +3,5 @@ requires = ['setuptools >= 42', 'setuptools_scm[toml] >= 3.4', 'wheel']
 build-backend = 'setuptools.build_meta'
 
 [tool.setuptools_scm]
-write_to = 'ffffff/__init__.py'
+write_to = 'src/ffffff/__init__.py'
 write_to_template = "__version__ = '{version}'\n"

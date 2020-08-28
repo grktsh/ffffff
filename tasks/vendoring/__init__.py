@@ -44,7 +44,7 @@ def log(msg):
 
 def _get_vendor_dir(ctx):
     git_root = ctx.run('git rev-parse --show-toplevel', hide=True).stdout
-    return Path(git_root.strip()) / 'ffffff' / '_vendor'
+    return Path(git_root.strip()) / 'src' / 'ffffff' / '_vendor'
 
 
 def clean_vendor(ctx, vendor_dir):

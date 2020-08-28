@@ -2,5 +2,5 @@
 
 /build/
 /dist/
-/ffffff/*
-!/ffffff/vendor.txt
+/src/ffffff/*
+!/src/ffffff/vendor.txt

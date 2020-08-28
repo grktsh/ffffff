@@ -1,1 +1,9 @@
+recursive-include src/ffffff/_vendor LICENSE
+recursive-include src/ffffff/_vendor LICENSE.*
+recursive-include src/ffffff/_vendor *.LICENSE
+recursive-include src/ffffff/_vendor *.LICENSE.*
+recursive-include src/ffffff/_vendor py.typed
+recursive-include src/ffffff/_vendor *.pyi
+recursive-include src/ffffff/_vendor/blib2to3 *.txt
+
 prune tasks
