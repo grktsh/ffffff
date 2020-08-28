@@ -1,0 +1,33 @@
+diff --git a/src/ffffff/_vendor/black/__init__.py b/src/ffffff/_vendor/black/__init__.py
+index 625e526..41c7ef8 100644
+--- a/src/ffffff/_vendor/black/__init__.py
++++ b/src/ffffff/_vendor/black/__init__.py
+@@ -64,7 +64,9 @@ from ffffff._vendor._black_version import version as __version__
+ if TYPE_CHECKING:
+     import colorama  # noqa: F401
+ 
+-DEFAULT_LINE_LENGTH = 88
++import ffffff
++
++DEFAULT_LINE_LENGTH = 79
+ DEFAULT_EXCLUDES = r"/(\.direnv|\.eggs|\.git|\.hg|\.mypy_cache|\.nox|\.tox|\.venv|\.svn|_build|buck-out|build|dist)/"  # noqa: B950
+ DEFAULT_INCLUDES = r"\.pyi?$"
+ CACHE_DIR = Path(user_cache_dir("black", version=__version__))
+@@ -461,7 +463,7 @@ def target_version_option_callback(
+         " due to --exclude=."
+     ),
+ )
+-@click.version_option(version=__version__)
++@click.version_option(version=__version__ + '+' + ffffff.__version__)
+ @click.argument(
+     "src",
+     nargs=-1,
+@@ -5110,7 +5112,7 @@ def normalize_string_quotes(leaf: Leaf) -> None:
+     if new_escape_count > orig_escape_count:
+         return  # Do not introduce more escaping
+ 
+-    if new_escape_count == orig_escape_count and orig_quote == '"':
++    if new_escape_count == orig_escape_count and orig_quote == "'":
+         return  # Prefer double quotes
+ 
+     leaf.value = f"{prefix}{new_quote}{new_body}{new_quote}"

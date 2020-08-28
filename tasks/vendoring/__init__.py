@@ -117,7 +117,8 @@ def vendor(ctx, vendor_dir):
     remove_all(vendor_dir.glob('*.dist-info'))
     remove_all(vendor_dir.glob('*.egg-info'))
 
-    (vendor_dir / 'toml.py').unlink()
+    (vendor_dir / 'black.py').unlink()
+    (vendor_dir / 'blackd.py').unlink()
 
     # Drop the bin directory (contains easy_install, distro, chardetect etc.)
     # Might not appear on all OSes, so ignoring errors
