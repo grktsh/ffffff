@@ -2,5 +2,4 @@
 
 /build/
 /dist/
-/src/ffffff/*
-!/src/ffffff/vendor.txt
+/src/ffffff/__init__.py
