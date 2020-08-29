@@ -1,11 +1,8 @@
 name: CI
 
 on:
-  pull_request:
-  push:
-    branches:
-    tags:
-      - v*
+  - push
+  - pull_request
 
 jobs:
   packaging:
