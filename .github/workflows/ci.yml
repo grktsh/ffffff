@@ -4,6 +4,8 @@ on:
   pull_request:
   push:
     branches:
+    tags:
+      - v*
 
 jobs:
   packaging:
@@ -59,6 +61,7 @@ jobs:
       - uses: actions/download-artifact@v2
         with:
           name: dist
+          path: dist
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -67,5 +70,38 @@ jobs:
 
       - name: Test
         run: |
-          python -m pip install *${{ matrix.file-extension }}
+          python -m pip install dist/*${{ matrix.file-extension }}
           ffffff --version
+
+  release:
+    needs: test
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: dist
+          path: dist
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
+      - name: Publish
+        env:
+          TWINE_USERNAME: __token__
+          TWINE_PASSWORD: ${{ contains(github.ref, '.dev') && secrets.TESTPYPI_PASSWORD || secrets.PYPI_PASSWORD }}
+          TWINE_REPOSITORY: ${{ contains(github.ref, '.dev') && 'testpypi' || 'pypi' }}
+        run: |
+          python -m pip install twine
+          twine upload dist/*
+
+      - name: Create Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          prerelease: ${{ contains(github.ref, '.dev') }}
