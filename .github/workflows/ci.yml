@@ -22,8 +22,7 @@ jobs:
           # actions/checkout#249
           fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -41,10 +40,7 @@ jobs:
           # actions/checkout#249
           fetch-depth: 0
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.8'
+      - uses: actions/setup-python@v2
 
       - name: Ensure pip is up to date
         run: |
@@ -55,8 +51,7 @@ jobs:
           python -m pip install pep517
           python -m pep517.build .
 
-      - name: Upload
-        uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v2
         with:
           name: dist
           path: dist
@@ -81,8 +76,7 @@ jobs:
           name: dist
           path: dist
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
+      - uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
 
@@ -103,10 +97,7 @@ jobs:
           name: dist
           path: dist
 
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.8'
+      - uses: actions/setup-python@v2
 
       - name: Publish
         env:
@@ -116,8 +107,7 @@ jobs:
           python -m pip install twine
           twine upload dist/*
 
-      - name: Create Release
-        uses: actions/create-release@v1
+      - uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
